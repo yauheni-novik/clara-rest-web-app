@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<body>
+<h2>Rest Web App</h2>
+</body>
+</html>
+
+<html>
+<head>
+    <title>clara-rest-web-app</title>
+    <link rel="stylesheet" type="text/css" href="css/main.css"/>
+
+    <script src="http://code.jquery.com/jquery-1.10.1.js">
+    </script>
+</head>
+
+<body>
+
+<div id="add-node-flash-message" class="flash-message">
+</div>
+
+<p class="title">Add new node</p>
+
+<form id="add-node" action="javascript:alert('add node')">
+    <fieldset>
+        <ol>
+            <li>
+                <label for="add-node-title">Title</label>
+                <input id="add-node-title" name="title" type="text"/>
+            </li>
+        </ol>
+    </fieldset>
+    <button type="submit">Add</button>
+</form>
+
+<script>
+    $('#add-node-flash-message').hide();
+
+
+    $("#add-node").submit(function() {
+        if ($("#add-node-title").val().trim() == "") {
+            alert("Title must not be empty!");
+            return false;
+        }
+        var node = formToJSON();
+        //alert(node);
+
+        $.ajax({
+            type: "POST",
+            contentType: "application/json",
+            url: "resources/nodes",
+            dataType: "json",
+            data: node,
+
+            success: function() {
+                $("#add-node-flash-message").show().html("Node with Title[" +
+                        $("#add-node-title").val() + "] was added").fadeOut(5000);
+            },
+            error: function(request, textStatus, errorThrown) {
+                if (textStatus == 'error') {
+                    $("#add-node-flash-message").show().html(request.responseText).fadeOut(5000);
+                } else {
+                    $("#add-node-flash-message").show().html("Server error").fadeOut(5000);
+                }
+            }
+        });
+
+        return false;
+    });
+
+    function formToJSON() {
+        var title = $("#add-node-title").val().trim();
+
+        return JSON.stringify({
+            "title": title == "" ? null : title
+        });
+    }
+
+</script>
+
+</body>
+
+</html>
