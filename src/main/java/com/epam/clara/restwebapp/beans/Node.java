@@ -1,10 +1,12 @@
 package com.epam.clara.restwebapp.beans;
 
 import com.google.common.base.Objects;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.annotation.Id;
 
 import java.io.Serializable;
+import java.util.List;
 
 import static com.google.common.base.Strings.emptyToNull;
 
@@ -17,6 +19,8 @@ public class Node implements Serializable {
     private String title;
     private String parent;
     private Metadata metadata;
+    @Transient
+    private List<Node> children;
 
     public String get_id() {
       return _id;
@@ -48,6 +52,14 @@ public class Node implements Serializable {
 
     public void setParent(String parent) {
         this.parent = parent;
+    }
+
+    public List<Node> getChildren() {
+        return children;
+    }
+
+    public void setChildren(List<Node> children) {
+        this.children = children;
     }
 
     @Override

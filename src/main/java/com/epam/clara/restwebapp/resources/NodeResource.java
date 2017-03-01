@@ -1,6 +1,5 @@
 package com.epam.clara.restwebapp.resources;
 
-import static java.lang.String.format;
 import static javax.ws.rs.core.Response.Status.NO_CONTENT;
 
 import com.epam.clara.restwebapp.dao.NodeDao;
@@ -20,43 +19,45 @@ import java.util.List;
 @Path("/nodes")
 public class NodeResource {
 
-  public static final String NODE_NOT_FOUND_MSG = "Node with ISBN[%s] does not exist";
-  public static final String NODE_EXISTS_MSG = "Node with ISBN[%s] already exists";
+    public static final String NODE_NOT_FOUND_MSG = "Node with ISBN[%s] does not exist";
+    public static final String NODE_EXISTS_MSG = "Node with ISBN[%s] already exists";
 
-  private NodeDao nodeDao;
+    private NodeDao nodeDao;
 
-  @Autowired
-  public NodeResource(NodeDao nodeDao) {
-    this.nodeDao = nodeDao;
-  }
+    @Autowired
+    public NodeResource(NodeDao nodeDao) {
+        this.nodeDao = nodeDao;
+    }
 
-  @POST
-  @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-  public Response create(Node node) {
-    nodeDao.create(node);
-    return Response.status(NO_CONTENT).build();
-  }
+    @POST
+    @Consumes({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON})
+    @Produces({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON})
+    public Response create(Node node) {
+        Node addedNode = nodeDao.create(node);
+        return Response.ok(addedNode).build();
+    }
 
-  @GET
-  @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-  public Response getAllByParent(@QueryParam("parentId") String parentId) {
-    List<Node> nodes = new ArrayList<>(nodeDao.getAll(parentId));
-    GenericEntity<List<Node>> nodesEntity = new GenericEntity<List<Node>>(nodes) {
-    };
-    return Response.ok(nodesEntity).build();
-  }
+    @GET
+    @Produces({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON})
+    public Response getAllByParent(@QueryParam("parentId") String parentId) {
+        List<Node> nodes = new ArrayList<>(nodeDao.getAll(parentId));
+        GenericEntity<List<Node>> nodesEntity = new GenericEntity<List<Node>>(nodes) {
+        };
+        return Response.ok(nodesEntity).build();
+    }
 
-  @PUT
-  @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-  public Response update(Node node) throws NotFoundException {
-    nodeDao.update(node);
-    return Response.status(NO_CONTENT).build();
-  }
+    @PUT
+    @Consumes({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON})
+    public Response update(Node node) throws NotFoundException {
+        nodeDao.update(node);
+        return Response.status(NO_CONTENT).build();
+    }
 
-  @DELETE
-  @Path("{id}")
-  public Response delete(@PathParam("id") String id) throws NotFoundException {
-    nodeDao.delete(id);
-    return Response.status(NO_CONTENT).build();
-  }
+    @DELETE
+    @Path("{id}")
+    @Consumes({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON})
+    public Response delete(@PathParam("id") String id) throws NotFoundException {
+        nodeDao.delete(id);
+        return Response.status(NO_CONTENT).build();
+    }
 }

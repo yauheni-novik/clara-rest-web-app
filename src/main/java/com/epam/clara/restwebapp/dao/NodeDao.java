@@ -15,41 +15,47 @@ import java.util.List;
 
 public class NodeDao {
 
-  private static final Logger logger = LoggerFactory.getLogger(NodeDao.class);
+    private static final Logger logger = LoggerFactory.getLogger(NodeDao.class);
 
-  private MongoOperations mongoOperations;
+    private MongoOperations mongoOperations;
 
-  public NodeDao() {}
+    public NodeDao() {
+    }
 
-  public void create(final Node nodeToCreate) {
-    checkNotNull(nodeToCreate, "Argument[nodeToCreate] must not be null");
+    public Node create(final Node nodeToCreate) {
+        checkNotNull(nodeToCreate, "Argument[nodeToCreate] must not be null");
 
-    mongoOperations.save(nodeToCreate);
-    logger.info("Created [{}] node", nodeToCreate.getTitle());
-  }
+        mongoOperations.save(nodeToCreate);
+        logger.info("Created [{}] node", nodeToCreate.getTitle());
+        return nodeToCreate;
+    }
 
-  public List<Node> getAll(final String parentId) {
-    final List<Node> nodes = mongoOperations.find(Query.query(Criteria.where(PARENT_FIELD).is(parentId)), Node.class);
-//    final List<Node> nodes = mongoOperations.findAll(Node.class);
+    public List<Node> getAll(final String parentId) {
+        final List<Node> nodes = mongoOperations.find(Query.query(Criteria.where(PARENT_FIELD).is(parentId)), Node.class);
+        List<Node> children = null;
 
-    logger.info("Retrieved [{}] nodes", nodes.size());
-    return nodes;
-  }
+        for (Node node : nodes) {
+            children = getAll(node.get_id());
+            node.setChildren(children);
+        }
+        logger.info("Retrieved [{}] nodes", nodes.size());
+        return nodes;
+    }
 
-  public void update(final Node nodeToUpdate) {
-    checkNotNull(nodeToUpdate, "Argument[nodeToUpdate] must not be null");
+    public void update(final Node nodeToUpdate) {
+        checkNotNull(nodeToUpdate, "Argument[nodeToUpdate] must not be null");
 
-    mongoOperations.save(nodeToUpdate);
-    logger.info("Updated [{}] node", nodeToUpdate.getTitle());
-  }
+        mongoOperations.save(nodeToUpdate);
+        logger.info("Updated [{}] node", nodeToUpdate.getTitle());
+    }
 
-  public void delete(final String nodeIdToDelete) {
-    checkNotNull(nodeIdToDelete, "Argument[nodeIdToDelete] must not be null");
+    public void delete(final String nodeIdToDelete) {
+        checkNotNull(nodeIdToDelete, "Argument[nodeIdToDelete] must not be null");
 
-    mongoOperations.remove(Query.query(Criteria.where("_id").is(nodeIdToDelete)), Node.class);
-  }
+        mongoOperations.remove(Query.query(Criteria.where("_id").is(nodeIdToDelete)), Node.class);
+    }
 
-  public void setMongoOperations(final MongoOperations mongoOperations) {
-    this.mongoOperations = mongoOperations;
-  }
+    public void setMongoOperations(final MongoOperations mongoOperations) {
+        this.mongoOperations = mongoOperations;
+    }
 }
