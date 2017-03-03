@@ -48,9 +48,10 @@ public class NodeResource {
 
     @PUT
     @Consumes({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON})
+    @Produces({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON})
     public Response update(Node node) throws NotFoundException {
-        nodeDao.update(node);
-        return Response.status(NO_CONTENT).build();
+        Node addedNode = nodeDao.update(node);
+        return Response.ok(addedNode).build();
     }
 
     @DELETE

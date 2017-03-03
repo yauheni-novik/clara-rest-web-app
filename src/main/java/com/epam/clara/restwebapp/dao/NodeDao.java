@@ -42,11 +42,12 @@ public class NodeDao {
         return nodes;
     }
 
-    public void update(final Node nodeToUpdate) {
+    public Node update(final Node nodeToUpdate) {
         checkNotNull(nodeToUpdate, "Argument[nodeToUpdate] must not be null");
 
         mongoOperations.save(nodeToUpdate);
         logger.info("Updated [{}] node", nodeToUpdate.getTitle());
+        return nodeToUpdate;
     }
 
     public void delete(final String nodeIdToDelete) {
