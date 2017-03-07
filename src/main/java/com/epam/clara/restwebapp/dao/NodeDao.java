@@ -32,12 +32,9 @@ public class NodeDao {
 
     public List<Node> getAll(final String parentId) {
         final List<Node> nodes = mongoOperations.find(Query.query(Criteria.where(PARENT_FIELD).is(parentId)), Node.class);
-        List<Node> children = null;
 
-        for (Node node : nodes) {
-            children = getAll(node.get_id());
-            node.setChildren(children);
-        }
+        nodes.stream().forEach(node -> node.setChildren(getAll(node.get_id())));
+
         logger.info("Retrieved [{}] nodes", nodes.size());
         return nodes;
     }
